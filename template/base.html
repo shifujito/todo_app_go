@@ -7,7 +7,24 @@
     <title>TODO</title>
 </head>
 <body>
-   {{ template "index" }}
+    <div>
+        <table border="1">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>TASK</td>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range . }}
+                    <tr>
+                        <td>{{ .Id }}</td>
+                        <td>{{ .Task }}</td>
+                    </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
 {{ end }}

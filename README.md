@@ -18,17 +18,10 @@ CREATE USER `username` WITH PASSWORD `'[パスワード]'` CREATEDB;
 
 ```sql
 CREATE DATABASE todo;
-
-```
-
-logout PostgreSql
-
-```shell
-$ psql -U `username` -f setup.sql -d todo
 ```
 
 cofirm table
 
 ```shell
-$ sql -U `username` -d todo -c "select * from todo;"
+$ psql -U `username` -d todo -c "select * from todos;"
 ```
