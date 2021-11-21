@@ -5,6 +5,8 @@
             <tr>
                 <td>ID</td>
                 <td>TASK</td>
+                <td>EDIT</td>
+                <td>DELETE</td>
             </tr>
         </thead>
         <tbody>
@@ -12,9 +14,11 @@
                 <tr>
                     <td>{{ .Id }}</td>
                     <td>{{ .Task }}</td>
+                    <td><a href="/edit?id={{ .Id }}">Edit</a></td>
+                    <td><a href="/delete?id={{ .Id }}">Delete</a></td>
                 </tr>
             {{ end }}
-        </tbody>
+            </tbody>
     </table>
 </div>
 {{ end }}

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
@@ -66,8 +67,8 @@ func main() {
 		Handler: nil,
 	}
 	http.HandleFunc("/index", Index)
-	http.HandleFunc("/new", New)
 	http.HandleFunc("/create", Create)
+	http.HandleFunc("/delete", Delete)
 	server.ListenAndServe()
 }
 
@@ -77,18 +78,26 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	db.Find(&query)
 
 	tmpl.ExecuteTemplate(w, "base", query)
-
+	defer db.Close()
 }
 func Create(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
+	if r.Method == "GET" {
+		tmpl.ExecuteTemplate(w, "new", "")
+	} else if r.Method == "POST" {
 		db := ConnectDB()
 		task := template.HTML(r.FormValue("task"))
 		newTodo := Todo{Task: string(task)}
 		db.Create(&newTodo)
+		http.Redirect(w, r, "/index", 301)
 	}
-	http.Redirect(w, r, "/index", 301)
 }
 
-func New(w http.ResponseWriter, r *http.Request) {
-	tmpl.ExecuteTemplate(w, "new", "")
+func Delete(w http.ResponseWriter, r *http.Request) {
+	deleteId, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		panic("user id is not intger but string")
+	}
+	db := ConnectDB()
+	db.Delete(&Todo{}, deleteId)
+	http.Redirect(w, r, "/index", 301)
 }
