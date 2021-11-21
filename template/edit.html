@@ -1,0 +1,17 @@
+{{ define "edit"}}
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html">
+    <title>TODO</title>
+</head>
+<body>
+   <form action="/edit" method="POST">
+        <input type="hidden" name="id" value="{{ .Id }}" />
+        <input type="text" name="task" value="{{ .Task }}"/>
+        <input type="submit" value="登録" />
+   </form>
+</body>
+</html>
+{{ end }}

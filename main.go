@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
 
 	"github.com/jinzhu/gorm"
@@ -69,6 +70,7 @@ func main() {
 	http.HandleFunc("/index", Index)
 	http.HandleFunc("/create", Create)
 	http.HandleFunc("/delete", Delete)
+	http.HandleFunc("/edit", Update)
 	server.ListenAndServe()
 }
 
@@ -76,7 +78,9 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	db := ConnectDB()
 	query := []Todo{}
 	db.Find(&query)
-
+	sort.Slice(query, func(i, j int) bool {
+		return query[i].Id < query[j].Id
+	})
 	tmpl.ExecuteTemplate(w, "base", query)
 	defer db.Close()
 }
@@ -100,4 +104,27 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	db := ConnectDB()
 	db.Delete(&Todo{}, deleteId)
 	http.Redirect(w, r, "/index", 301)
+	defer db.Close()
+}
+
+func Update(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		UpContent := Todo{}
+		updateId, err := strconv.Atoi(r.URL.Query().Get("id"))
+		if err != nil {
+			panic(err)
+		}
+		db := ConnectDB()
+		db.First(&UpContent, updateId)
+		tmpl.ExecuteTemplate(w, "edit", UpContent)
+		defer db.Close()
+	} else if r.Method == "POST" {
+		task := template.HTML(r.FormValue("task"))
+		id := r.FormValue("id")
+		intId, _ := strconv.Atoi(id)
+		newTodo := Todo{Id: uint(intId)}
+		db := ConnectDB()
+		db.Model(&newTodo).Update("task", task)
+		http.Redirect(w, r, "/index", 301)
+	}
 }
