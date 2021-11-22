@@ -64,7 +64,7 @@ func ConnectDB() (db *gorm.DB) {
 
 func main() {
 	server := http.Server{
-		Addr:    "localhost:8080",
+		Addr:    ":" + os.Getenv("PORT"),
 		Handler: nil,
 	}
 	http.HandleFunc("/index", Index)
@@ -84,6 +84,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "base", query)
 	defer db.Close()
 }
+
 func Create(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		tmpl.ExecuteTemplate(w, "new", "")
